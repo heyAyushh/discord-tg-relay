@@ -1,6 +1,7 @@
 import { Message, Client, Intents } from 'discord.js';
 import 'dotenv/config';
 import { Telegraf } from 'telegraf';
+import logger from './utils/logger';
 
 if (process.env.TELEGRAM_BOT_TOKEN === undefined) {
  throw new TypeError('BOT_TOKEN must be provided!');
@@ -23,10 +24,14 @@ const sendTGMessage = async (msg: string) => {
 };
 
 client.on('messageCreate', async (message: Message) => {
- if (
-  message.content.includes(process.env.PATTERN as string)
- && message.channelId === process.env.DISCORD_CHANNEL_ID
- ) {
-  await sendTGMessage(message.content);
+ try {
+  if (
+   message.content.includes(process.env.PATTERN as string)
+     && message.channelId === process.env.DISCORD_CHANNEL_ID
+  ) {
+   await sendTGMessage(message.content);
+  }
+ } catch (err) {
+  logger.error(err);
  }
 });
